@@ -1,6 +1,6 @@
 # Seminar-Asset-Pricing-and-Financial-Markets
 
-Files containing code used throughout the paper. All the code was independently made for the purpose of this paper..
+Files containing code used throughout the paper. All the code was independently made for the purpose of this paper.
 
 ## Integral Pricing Formula
 - Heston's original formula
