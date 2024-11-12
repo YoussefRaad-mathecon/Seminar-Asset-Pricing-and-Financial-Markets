@@ -18,4 +18,4 @@ Files containing code used throughout the paper. All the code was independently 
 - Monte Carlo loop for European call option pricing
 
 ## Extra
-proves that are too long and not important for the paper
+Proves that are too long and not important for the paper
