@@ -16,3 +16,6 @@ Files containing code used throughout the paper. All the code was independently 
 - Euler (full truncation)
 - Quadratic-Exponential (martingale corrected)
 - Monte Carlo loop for European call option pricing
+
+## Extra
+proves that are too long and not important for the paper
