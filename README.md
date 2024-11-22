@@ -11,6 +11,7 @@ Files containing code used throughout the paper. All the code was independently 
 - Variance distribution and approximations thereof
 - Stock price trajectories and their distribution using a Euler scheme
 - Simulation results visualized
+- Convergence results for one case visualized
 
 ## Simulation schemes and pricing
 - Euler (full truncation)
