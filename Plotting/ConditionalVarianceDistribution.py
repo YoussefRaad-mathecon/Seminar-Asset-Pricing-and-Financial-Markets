@@ -7,7 +7,7 @@ kappa = 0.5
 theta = 0.04
 varepsilon = 1.0
 sigma = varepsilon
-V_t = 0.09
+V_t = 0.01
 T = 0.1
 t = 0.0
 
@@ -56,6 +56,17 @@ v_next = (1 / beta) * np.log((1 - p) / (1 - Uv))
 # Generate QE CDF from v_next values
 cdf_qe2 = np.array([np.sum(v_next <= xi) for xi in x]) / len(v_next)
 
+b2 = (2 / psi) - 1 + np.sqrt(2 / psi) * np.sqrt((2 / psi) - 1)
+b = np.sqrt(b2)
+a = m / (1 + b2)
+
+    # Generate v_next values
+Zv = norm.ppf(Uv)
+v_next = a * (b + Zv) ** 2
+
+    # Generate QE CDF from v_next values
+cdf_qe1 = np.array([np.sum(v_next <= xi) for xi in x]) / len(v_next)
+
 # Plotting
 plt.figure(figsize=(12, 8))
 
@@ -76,7 +87,7 @@ plt.plot(x, cdf_qe2, label=r'QE ($\psi > \psi_c$)', color='saddlebrown', linesty
 # Customizing the plot
 plt.xlabel(r'$x$', fontsize=18)  # Larger font size for x-axis label
 plt.ylabel(r'$\mathbb{P}(v_T \leq x \mid v_t)$', fontsize=18)  # Larger font size for y-axis label
-plt.legend(fontsize=14)  # Larger font size for legend
+plt.legend(fontsize=20)  # Larger font size for legend
 
 # Adjust tick label sizes
 plt.xticks(fontsize=14)  # Larger font size for x-axis ticks
