@@ -1,7 +1,7 @@
 import numpy as np
 import time
 # Parameters
-#case 2 example
+#case 2
 S0 = 100
 v0 = 0.09
 r = 0.05
@@ -46,7 +46,7 @@ def heston_euler_mc(S0, v0, r, kappa, theta, sigma, rho, T, K, N, time_steps):
         v[:, t] = np.maximum(v[:, t], 0)  # Ensure non-negative variance
 
         # Log-asset price process
-        S[:, t] = S[:, t-1] * np.exp((r - 0.5 * np.maximum(v[:, t-1], 0) ) * dt + np.sqrt(np.maximum(v[:, t-1], 0)) * np.sqrt(dt) * Z2)
+        S[:, t] = S[:, t-1] + S[:, t-1] * r * dt + np.sqrt(np.maximum(v[:, t-1], 0) * dt) * Z2 * S[:, t-1]
 
     # Compute discounted payoffs
     payoffs = np.exp(-r * T) * np.maximum(S[:, -1] - K, 0)
