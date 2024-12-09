@@ -1,6 +1,7 @@
 import numpy as np
 import time
 # Parameters
+#case 2 example
 S0 = 100
 v0 = 0.09
 r = 0.05
@@ -11,14 +12,17 @@ rho = -0.3
 T = 5
 N = 1000000
 
-K_values = [60, 100, 140]
-time_steps = [5, 10, 20, 40, 80, 160]
 
-actual_prices = {
-    60: 56.575081859298884,
+
+K_values = [60, 100, 140]
+#time_steps = [10, 20, 40, 80, 160, 320]
+time_steps = [5, 10, 20, 40, 80, 160]
+#time_steps = [15, 30, 60, 120, 240, 480]
+actual_prices = {60: 56.575081859298884,
     100: 33.59687159343891,
     140: 18.157002079695353
 }
+
 
 np.random.seed(112233)
 # Initialize results dictionary
@@ -42,13 +46,14 @@ def heston_euler_mc(S0, v0, r, kappa, theta, sigma, rho, T, K, N, time_steps):
         v[:, t] = np.maximum(v[:, t], 0)  # Ensure non-negative variance
 
         # Log-asset price process
-        S[:, t] = S[:, t-1] * np.exp((r - 0.5 * v[:, t-1]) * dt + np.sqrt(np.maximum(v[:, t-1], 0)) * np.sqrt(dt) * Z2)
+        S[:, t] = S[:, t-1] * np.exp((r - 0.5 * np.maximum(v[:, t-1], 0) ) * dt + np.sqrt(np.maximum(v[:, t-1], 0)) * np.sqrt(dt) * Z2)
 
     # Compute discounted payoffs
-    payoffs = np.maximum(S[:, -1] - K, 0)
-    call_price = np.exp(-r * T) * np.mean(payoffs)
-    std_dev = np.std(payoffs)  # Standard deviation of payoffs
-    CI = 1.96 * std_dev / np.sqrt(N)  # 95% Confidence Interval
+    payoffs = np.exp(-r * T) * np.maximum(S[:, -1] - K, 0)
+    call_price = np.mean(payoffs)
+    std_dev = np.std(payoffs, ddof=1) # Standard deviation of payoffs
+    Zc = 2.576
+    CI = Zc * std_dev / np.sqrt(N)  # 99% Confidence Interval
     
     return call_price, CI, std_dev
 
@@ -75,4 +80,4 @@ for method in methods:
 
             results[method][K].append((dt, option_price, std_dev, computing_time, 0, CI, bias))
 
-            print(f"Finished K={K}, n={n}, dt={dt:.6f}, Price={option_price:.6f}w, Bias={bias:.3f}, CI={CI:.3f}{star}")
+            print(f"Finished K={K}, n={n}, dt={dt:.6f}, Price={option_price:.6f}, Bias={bias:.3f}, CI={CI:.3f}{star}")
