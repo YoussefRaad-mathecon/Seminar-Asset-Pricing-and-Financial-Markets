@@ -55,26 +55,31 @@ class HestonModel:
     def generateHestonPathEulerDisc(self, T, n):
         dt = T / n
         S = np.zeros(n + 1)
-        S[0] = self.S0
         v = np.zeros(n + 1)
-        v[0] = self.v0
         v_zero_count = 0
+
+        # Initialize the first values
+        S[0] = self.S0
+        v[0] = self.v0
+
+        # Generate correlated Brownian motions for all steps in advance
         Z1 = np.random.normal(0, 1, n)
         Z2 = np.random.normal(0, 1, n)
         Zv = Z1
-        Zs = self.rho * Z1 + np.sqrt(1 - self.rho ** 2) * Z2
+        Zs = self.rho * Z1 + np.sqrt(1 - self.rho**2) * Z2
 
         for i in range(1, n + 1):
-            dv = self.kappa_tilde * (self.theta_tilde - v[i - 1]) * dt + self.sigma * np.sqrt(v[i - 1] * dt) * Zv[i-1]
-            v[i] = v[i - 1] + dv
-            if v[i] <= 0:
-                v_zero_count += 1
-                v[i] = 0  # full truncation scheme
-
-            dS = self.r * S[i - 1] * dt + np.sqrt(v[i - 1] * dt) * S[i - 1] * Zs[i-1]
-            S[i] = S[i - 1] + dS
-
+            v[i] = v[i-1] + self.kappa_tilde * (self.theta_tilde - max(v[i - 1], 0)) * dt + self.sigma * np.sqrt(max(v[i - 1], 0)) * np.sqrt(dt) * Zv[i - 1]
+            v[i] = max(v[i], 0)
+            S[i] = S[i - 1] * np.exp(
+            self.r * dt
+            - 0.5 * max(v[i - 1], 0) * dt
+            + np.sqrt(max(v[i - 1], 0)) * Zs[i - 1] * np.sqrt(dt)
+        )
         return S, v_zero_count
+
+
+
 
     def generateHestonPathMilsteinDisc(self, T, n):
         dt = T / n
@@ -427,15 +432,14 @@ class HestonModel:
         discount_factor = np.exp(-self.r * T)
 
         # Calculate the call option payoff.
-        call_payoffs = np.maximum(S_paths[:, -1] - K, 0)
+        call_payoffs = discount_factor * np.maximum(S_paths[:, -1] - K, 0)
     
         
         # Calculate the price as the mean of discounted payoffs
-        price = discount_factor * np.mean(call_payoffs)
+        price =  np.mean(call_payoffs)
         
         # Calculate the standard deviation of discounted payoffs
-        # Note: You should multiply the standard deviation by the discount factor to match the units of the price
-        std_dev = discount_factor * np.std(call_payoffs, ddof=1)
+        std_dev = np.std(call_payoffs, ddof=1)
         
         # Confidence level critical value for 99%
         Zc = 2.576
