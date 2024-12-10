@@ -114,4 +114,3 @@ for case_name, params in cases.items():
 
             print(f"K={K}, n={n}, dt={dt:.6f}, Price={option_price:.6f}, "
                   f"Bias={bias:.3f}, CI={CI:.3f}")
-
